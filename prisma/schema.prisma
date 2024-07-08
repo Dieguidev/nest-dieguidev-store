@@ -13,15 +13,34 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-// model User {
-//   id String @id @default(uuid())
-//   isActive Boolean @default(true)
+model User {
+  id       String  @id @default(uuid())
+  email    String  @unique
+  password String
+  role     String
+  isActive Boolean @default(true)
 
-//   createdAt DateTime @default(now())
-//   updatedAt DateTime @updatedAt
+  customer   Customer? @relation(fields: [customerId], references: [id])
+  customerId String?   @unique
 
-//   @@index([isActive])
-// }
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([isActive])
+}
+
+model Customer {
+  id       String @id @default(uuid())
+  name     String
+  lastName String @map("last_name")
+  role     String
+  phone    String
+
+  User User?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
 
 model Product {
   id          String  @id @default(uuid())
