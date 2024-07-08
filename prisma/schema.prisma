@@ -25,6 +25,7 @@ model User {
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+  Orders    Orders[]
 
   @@index([isActive])
 }
@@ -86,4 +87,29 @@ model ProductCategory {
   categoryId String
 
   @@id([productId, categoryId])
+}
+
+model Orders {
+  id   String   @id @default(uuid())
+  date DateTime
+
+  user   User   @relation(fields: [userId], references: [id])
+  userId String
+
+  createdAt DateTime    @default(now())
+  updatedAt DateTime    @updatedAt
+  OrderItem OrderItem[]
+}
+
+model OrderItem {
+  id        String @id @default(uuid())
+  productId String
+  quantity  Int
+  price     Float
+
+  Order   Orders? @relation(fields: [orderId], references: [id])
+  orderId String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
