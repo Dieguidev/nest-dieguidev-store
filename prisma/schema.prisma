@@ -52,8 +52,9 @@ model Product {
   brand   Brand  @relation(fields: [brandId], references: [id])
   brandId String
 
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  createdAt  DateTime          @default(now())
+  updatedAt  DateTime          @updatedAt
+  categories ProductCategory[]
 
   @@index([isActive])
 }
@@ -68,13 +69,21 @@ model Brand {
   Product   Product[]
 }
 
-// model Category {
-//   id String @id @default(uuid())
+model Category {
+  id   String @id @default(uuid())
+  name String @unique
 
-//   isActive Boolean @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
-//   createdAt DateTime @default(now())
-//   updatedAt DateTime @updatedAt
+  products ProductCategory[]
+}
 
-//   @@index([isActive])
-// }
+model ProductCategory {
+  product    Product  @relation(fields: [productId], references: [id])
+  productId  String
+  category   Category @relation(fields: [categoryId], references: [id])
+  categoryId String
+
+  @@id([productId, categoryId])
+}
