@@ -34,7 +34,7 @@ model Customer {
   name     String
   lastName String @map("last_name")
   phone    String
-  User User?
+  User     User?
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -49,10 +49,23 @@ model Product {
   image       String
   isActive    Boolean @default(true)
 
+  brand   Brand  @relation(fields: [brandId], references: [id])
+  brandId String
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
   @@index([isActive])
+}
+
+model Brand {
+  id    String @id @default(uuid())
+  name  String @unique
+  image String
+
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  Product   Product[]
 }
 
 // model Category {
