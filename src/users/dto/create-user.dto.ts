@@ -1,4 +1,4 @@
-import { IsEmail, IsNotEmpty, IsOptional, IsString, IsUUID, Length, MinLength } from "class-validator";
+import { IsEmail, IsNotEmpty, IsOptional, IsString, IsUUID, MinLength } from "class-validator";
 
 export class CreateUserDto {
   @IsString()
@@ -16,5 +16,5 @@ export class CreateUserDto {
   @IsOptional()
   @IsNotEmpty()
   @IsUUID()
-  readonly customerId: string;
+  readonly customerId?: string;
 }

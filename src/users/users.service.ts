@@ -1,4 +1,4 @@
-import { Injectable, Logger, OnModuleInit } from '@nestjs/common';
+import { BadRequestException, Injectable, Logger, OnModuleInit } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { PrismaClient } from '@prisma/client';
@@ -12,8 +12,15 @@ export class UsersService extends PrismaClient implements OnModuleInit {
     this.logger.log('UsersService connected to database')
   }
 
-  create(createUserDto: CreateUserDto) {
-    return 'This action adds a new user';
+  async create(createUserDto: CreateUserDto) {
+    const { email } = createUserDto;
+    const existsUser = await this.user.findUnique({
+      where: { email }
+    });
+
+    if (existsUser) throw new BadRequestException('User already exists');
+    const user = await this.user.create({ data: createUserDto });
+    return user;
   }
 
   findAll() {
