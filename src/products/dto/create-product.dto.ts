@@ -1,4 +1,4 @@
-import { IsNotEmpty, IsNumber, IsPositive, IsString, IsUrl } from "class-validator";
+import { IsNotEmpty, IsNumber, IsPositive, IsString, IsUrl, IsUUID } from "class-validator";
 
 export class CreateProductDto {
   @IsString()
@@ -26,4 +26,9 @@ export class CreateProductDto {
   @IsNotEmpty()
   // @ApiProperty()
   readonly image: string;
+
+  @IsNotEmpty()
+  @IsUUID()
+  // @ApiProperty()
+  readonly brandId: string;
 }
