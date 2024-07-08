@@ -19,7 +19,25 @@ export class ProductsService extends PrismaClient implements OnModuleInit {
     const productExists = await this.product.findUnique({ where: { name } });
     if (productExists) throw new BadRequestException('Product already exists');
 
-    const newProduct = await this.product.create({ data: createProductDto });
+    const {categoriesIds , ...rest}= createProductDto;
+
+    const newProduct = await this.product.create({ data: {
+      ...rest,
+      categories: {
+        createMany: {
+          data: categoriesIds.map(categoryId => ({ categoryId }))
+        }
+      },
+
+    },
+    include: {
+      categories: {
+        include: {
+          category: true
+        }
+      }
+    }
+   });
 
     return newProduct;
   }
@@ -59,6 +77,38 @@ export class ProductsService extends PrismaClient implements OnModuleInit {
     await this.findOne(id)
     const product = await this.product.update({ where: { id }, data: updateProductDto });
     return product;
+  }
+
+  async removeCategory(idProduct: string, categoryId: string) {
+    const product = await this.product.findUnique({ where: { id: idProduct } });
+    if (!product) throw new BadRequestException('Product not found');
+
+    const category = await this.category.findUnique({ where: { id: categoryId } });
+    if (!category) throw new BadRequestException('Category not found');
+
+    const productCategory = await this.productCategory.findMany({ where: { productId: idProduct, categoryId } });
+    console.log(productCategory);
+
+    if (productCategory.length ===0) throw new BadRequestException('Product does not have this category');
+    await this.productCategory.deleteMany({ where: { productId: idProduct, categoryId } });
+
+
+    return { message: 'Category deleted to product' };
+  }
+
+  async addCategory(idProduct: string, categoryId: string) {
+    const product = await this.product.findUnique({ where: { id: idProduct } });
+    if (!product) throw new BadRequestException('Product not found');
+
+    const category = await this.category.findUnique({ where: { id: categoryId } });
+    if (!category) throw new BadRequestException('Category not found');
+
+    const productCategory = await this.productCategory.findMany({ where: { productId: idProduct, categoryId } });
+    if (productCategory.length > 0) throw new BadRequestException('Product already has this category');
+
+    await this.productCategory.create({ data: { productId: idProduct, categoryId } });
+
+    return { message: 'Category added to product' };
   }
 
   async remove(id: string) {
