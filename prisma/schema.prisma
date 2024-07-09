@@ -38,6 +38,7 @@ model Customer {
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+  Orders    Orders[]
 }
 
 model Product {
@@ -86,4 +87,30 @@ model ProductCategory {
   categoryId String
 
   @@id([productId, categoryId])
+}
+
+model Orders {
+  id String @id @default(uuid())
+  totalAmount Decimal @db.Decimal(10, 2)
+  totalItems  Int
+
+  customer   Customer @relation(fields: [customerId], references: [id])
+  customerId String
+
+  createdAt DateTime    @default(now())
+  updatedAt DateTime    @updatedAt
+  OrderItem OrderItem[]
+}
+
+model OrderItem {
+  id        String  @id @default(uuid())
+  productId String
+  quantity  Int
+  price     Decimal @db.Decimal(10, 2)
+
+  Order   Orders? @relation(fields: [orderId], references: [id])
+  orderId String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
